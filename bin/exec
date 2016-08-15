@@ -1,0 +1,27 @@
+#!/usr/bin/env node
+'use strict';
+
+const os = require('os');
+const path = require('path');
+
+const argv = require('minimist')(process.argv.slice(2));
+
+const executor = require('../');
+
+const root = argv.root || process.env.PWD;
+const concurrency = argv.c !== undefined ? argv.c : argv.concurrency !== undefined ? argv.concurrency : argv.limit;
+
+const opts = {
+  // mocha config
+  timeout: argv.timeout || 2000,
+  // other opts
+  root: root,
+  concurrency: concurrency === false ? false : concurrency || os.cpus().length,
+  testdir: argv.dir || path.resolve(root, 'test'),
+  file: argv.file && path.resolve(root, argv.file),
+  files: argv.files,
+  retry: argv.retry || 0,
+  delay: argv.delay || 0
+};
+
+executor(opts);
